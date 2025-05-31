@@ -11,27 +11,40 @@ import { Label } from '@/components/ui/label'; // Retained as it might be used b
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 const healthInfoSchema = z.object({
   height: z.coerce.number().positive({ message: 'Height must be positive' }),
   weight: z.coerce.number().positive({ message: 'Weight must be positive' }),
   bodyFatPercentage: z.preprocess(
-    (val) => (val === "" ? undefined : val),
+    (val) => (val === "" || val === null || val === undefined ? undefined : val),
     z.coerce.number().min(0).max(100).optional()
   ),
   waistCircumference: z.coerce.number().positive({ message: 'Waist circumference must be positive' }),
   diastolicBloodPressure: z.coerce.number().int().positive({ message: 'Diastolic BP must be a positive integer' }),
   systolicBloodPressure: z.coerce.number().int().positive({ message: 'Systolic BP must be a positive integer' }),
   leftThighCircumference: z.preprocess(
-    (val) => (val === "" ? undefined : val),
+    (val) => (val === "" || val === null || val === undefined ? undefined : val),
     z.coerce.number().positive().optional()
   ),
   rightThighCircumference: z.preprocess(
-    (val) => (val === "" ? undefined : val),
+    (val) => (val === "" || val === null || val === undefined ? undefined : val),
     z.coerce.number().positive().optional()
   ),
   fitnessGoals: z.string().min(10, { message: 'Please describe your fitness goals (min. 10 characters)' }),
+
+  // Optional Fitness Test Metrics
+  shuttleRunCount: z.preprocess((val) => (val === "" || val === null || val === undefined ? undefined : val), z.coerce.number().positive().optional()),
+  tenMeterShuttleRunTime: z.preprocess((val) => (val === "" || val === null || val === undefined ? undefined : val), z.coerce.number().positive().optional()),
+  standingLongJumpCm: z.preprocess((val) => (val === "" || val === null || val === undefined ? undefined : val), z.coerce.number().positive().optional()),
+  sitToStandCount: z.preprocess((val) => (val === "" || val === null || val === undefined ? undefined : val), z.coerce.number().positive().optional()),
+  sixMinuteWalkDistanceM: z.preprocess((val) => (val === "" || val === null || val === undefined ? undefined : val), z.coerce.number().positive().optional()),
+  twoMinuteStepCount: z.preprocess((val) => (val === "" || val === null || val === undefined ? undefined : val), z.coerce.number().positive().optional()),
+  sitAndReachTargetTime: z.preprocess((val) => (val === "" || val === null || val === undefined ? undefined : val), z.coerce.number().positive().optional()),
+  fiveMeterShuttleRunTime: z.preprocess((val) => (val === "" || val === null || val === undefined ? undefined : val), z.coerce.number().positive().optional()),
+  repeatedSideStepCount: z.preprocess((val) => (val === "" || val === null || val === undefined ? undefined : val), z.coerce.number().positive().optional()),
+  eyeHandWallPassTime: z.preprocess((val) => (val === "" || val === null || val === undefined ? undefined : val), z.coerce.number().positive().optional()),
 });
 
 type HealthInfoFormData = z.infer<typeof healthInfoSchema>;
@@ -42,6 +55,8 @@ interface HealthInfoFormProps {
 }
 
 export function HealthInfoForm({ onSubmit, defaultValues: propDefaultValues }: HealthInfoFormProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const form = useForm<HealthInfoFormData>({
     resolver: zodResolver(healthInfoSchema),
     defaultValues: {
@@ -54,6 +69,16 @@ export function HealthInfoForm({ onSubmit, defaultValues: propDefaultValues }: H
       leftThighCircumference: propDefaultValues?.leftThighCircumference ?? '',
       rightThighCircumference: propDefaultValues?.rightThighCircumference ?? '',
       fitnessGoals: propDefaultValues?.fitnessGoals ?? '',
+      shuttleRunCount: propDefaultValues?.shuttleRunCount ?? '',
+      tenMeterShuttleRunTime: propDefaultValues?.tenMeterShuttleRunTime ?? '',
+      standingLongJumpCm: propDefaultValues?.standingLongJumpCm ?? '',
+      sitToStandCount: propDefaultValues?.sitToStandCount ?? '',
+      sixMinuteWalkDistanceM: propDefaultValues?.sixMinuteWalkDistanceM ?? '',
+      twoMinuteStepCount: propDefaultValues?.twoMinuteStepCount ?? '',
+      sitAndReachTargetTime: propDefaultValues?.sitAndReachTargetTime ?? '',
+      fiveMeterShuttleRunTime: propDefaultValues?.fiveMeterShuttleRunTime ?? '',
+      repeatedSideStepCount: propDefaultValues?.repeatedSideStepCount ?? '',
+      eyeHandWallPassTime: propDefaultValues?.eyeHandWallPassTime ?? '',
     },
   });
 
@@ -68,6 +93,16 @@ export function HealthInfoForm({ onSubmit, defaultValues: propDefaultValues }: H
       leftThighCircumference: propDefaultValues?.leftThighCircumference ?? '',
       rightThighCircumference: propDefaultValues?.rightThighCircumference ?? '',
       fitnessGoals: propDefaultValues?.fitnessGoals ?? '',
+      shuttleRunCount: propDefaultValues?.shuttleRunCount ?? '',
+      tenMeterShuttleRunTime: propDefaultValues?.tenMeterShuttleRunTime ?? '',
+      standingLongJumpCm: propDefaultValues?.standingLongJumpCm ?? '',
+      sitToStandCount: propDefaultValues?.sitToStandCount ?? '',
+      sixMinuteWalkDistanceM: propDefaultValues?.sixMinuteWalkDistanceM ?? '',
+      twoMinuteStepCount: propDefaultValues?.twoMinuteStepCount ?? '',
+      sitAndReachTargetTime: propDefaultValues?.sitAndReachTargetTime ?? '',
+      fiveMeterShuttleRunTime: propDefaultValues?.fiveMeterShuttleRunTime ?? '',
+      repeatedSideStepCount: propDefaultValues?.repeatedSideStepCount ?? '',
+      eyeHandWallPassTime: propDefaultValues?.eyeHandWallPassTime ?? '',
     };
     form.reset(resetValues);
   }, [propDefaultValues, form.reset]);
@@ -101,25 +136,37 @@ export function HealthInfoForm({ onSubmit, defaultValues: propDefaultValues }: H
     }
   }, [height, weight, waistCircumference]);
 
-  const processOptionalNumber = (value: number | undefined): number | undefined => {
-    if (typeof value === 'number' && !isNaN(value)) {
-      return value;
-    }
-    return undefined;
+  const processOptionalNumber = (value: number | string | undefined | null): number | undefined => {
+    if (value === "" || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
   };
 
   const handleFormSubmit: SubmitHandler<HealthInfoFormData> = (data) => {
     const bmiNum = parseFloat(calculatedBmi);
     const whtrNum = parseFloat(calculatedWhtr);
     
-    // `data` is already processed by Zod resolver.
-    // Optional fields like bodyFatPercentage will be number or undefined due to preprocess.
     onSubmit({
       ...data,
-      // Ensure final HealthInfo type fields are correctly number or undefined
+      height: Number(data.height), // Ensure required fields are numbers
+      weight: Number(data.weight),
+      waistCircumference: Number(data.waistCircumference),
+      diastolicBloodPressure: Number(data.diastolicBloodPressure),
+      systolicBloodPressure: Number(data.systolicBloodPressure),
+
       bodyFatPercentage: processOptionalNumber(data.bodyFatPercentage),
       leftThighCircumference: processOptionalNumber(data.leftThighCircumference),
       rightThighCircumference: processOptionalNumber(data.rightThighCircumference),
+      shuttleRunCount: processOptionalNumber(data.shuttleRunCount),
+      tenMeterShuttleRunTime: processOptionalNumber(data.tenMeterShuttleRunTime),
+      standingLongJumpCm: processOptionalNumber(data.standingLongJumpCm),
+      sitToStandCount: processOptionalNumber(data.sitToStandCount),
+      sixMinuteWalkDistanceM: processOptionalNumber(data.sixMinuteWalkDistanceM),
+      twoMinuteStepCount: processOptionalNumber(data.twoMinuteStepCount),
+      sitAndReachTargetTime: processOptionalNumber(data.sitAndReachTargetTime),
+      fiveMeterShuttleRunTime: processOptionalNumber(data.fiveMeterShuttleRunTime),
+      repeatedSideStepCount: processOptionalNumber(data.repeatedSideStepCount),
+      eyeHandWallPassTime: processOptionalNumber(data.eyeHandWallPassTime),
       bmi: isNaN(bmiNum) ? 0 : bmiNum,
       waistToHeightRatio: isNaN(whtrNum) ? 0 : whtrNum,
     });
@@ -269,8 +316,96 @@ export function HealthInfoForm({ onSubmit, defaultValues: propDefaultValues }: H
                 </FormItem>
               )}
             />
+
+            <div className="space-y-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setIsExpanded(!isExpanded)} 
+                className="w-full flex items-center justify-center"
+              >
+                {isExpanded ? <ChevronUp className="mr-2 h-4 w-4" /> : <ChevronDown className="mr-2 h-4 w-4" />}
+                {isExpanded ? 'Hide Optional Fitness Tests' : 'Show Optional Fitness Tests'}
+              </Button>
+
+              {isExpanded && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t mt-4">
+                  <FormField control={form.control} name="shuttleRunCount" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>왕복오래달리기 (회)</FormLabel>
+                      <FormControl><Input type="number" placeholder="Optional" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="tenMeterShuttleRunTime" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>10M 4회 왕복달리기 (초)</FormLabel>
+                      <FormControl><Input type="number" step="0.01" placeholder="Optional" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="standingLongJumpCm" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>제자리 멀리뛰기 (cm)</FormLabel>
+                      <FormControl><Input type="number" placeholder="Optional" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="sitToStandCount" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>의자에 앉았다 일어서기 (회)</FormLabel>
+                      <FormControl><Input type="number" placeholder="Optional" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="sixMinuteWalkDistanceM" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>6분 걷기 (m)</FormLabel>
+                      <FormControl><Input type="number" placeholder="Optional" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="twoMinuteStepCount" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>2분 제자리 걷기 (회)</FormLabel>
+                      <FormControl><Input type="number" placeholder="Optional" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="sitAndReachTargetTime" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>의자에 앉아 3M 표적 돌아오기 (초)</FormLabel>
+                      <FormControl><Input type="number" step="0.01" placeholder="Optional" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="fiveMeterShuttleRunTime" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>5m 4회 왕복달리기 (초)</FormLabel>
+                      <FormControl><Input type="number" step="0.01" placeholder="Optional" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="repeatedSideStepCount" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>반복옆뛰기 (회)</FormLabel>
+                      <FormControl><Input type="number" placeholder="Optional" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="eyeHandWallPassTime" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>눈-손 벽패스 협응력 (초)</FormLabel>
+                      <FormControl><Input type="number" step="0.01" placeholder="Optional" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+              )}
+            </div>
+
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex-col items-stretch gap-4">
             <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg py-6">
               Generate My Workout Program
             </Button>
@@ -280,5 +415,3 @@ export function HealthInfoForm({ onSubmit, defaultValues: propDefaultValues }: H
     </Card>
   );
 }
-
-    
