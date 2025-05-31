@@ -4,7 +4,7 @@
 import type { WorkoutProgram, DailyWorkout, Exercise } from '@/types/fitness';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Play, Zap, Info } from 'lucide-react'; // Zap for workout icon, Info for individual exercise play
+import { Play, Zap } from 'lucide-react'; // Changed Info to Play, Play was already imported.
 
 interface WorkoutScheduleProps {
   workoutProgram: WorkoutProgram;
@@ -59,7 +59,7 @@ export function WorkoutSchedule({ workoutProgram, onPlayWorkout, onPlayExercise,
                         className="h-7 w-7 text-primary/70 hover:text-primary"
                         aria-label={`Play guide for ${ex.name}`}
                       >
-                        <Info className="w-4 h-4" />
+                        <Play className="w-4 h-4" />
                       </Button>
                     )}
                   </li>
@@ -85,3 +85,4 @@ export function WorkoutSchedule({ workoutProgram, onPlayWorkout, onPlayExercise,
     </div>
   );
 }
+
