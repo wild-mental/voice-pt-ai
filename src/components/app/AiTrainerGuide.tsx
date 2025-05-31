@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { DailyWorkout, HealthInfo } from '@/types/fitness';
@@ -10,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, Play, Pause, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import SoundwaveIcon from './SoundwaveIcon';
 
 interface AiTrainerGuideProps {
   isOpen: boolean;
@@ -27,7 +29,6 @@ export function AiTrainerGuide({ isOpen, onClose, dailyWorkout, healthInfo }: Ai
   const { toast } = useToast();
 
   useEffect(() => {
-    // Ensure SpeechSynthesis API is available
     const synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
 
     if (isOpen && dailyWorkout && healthInfo && synth) {
@@ -48,12 +49,12 @@ export function AiTrainerGuide({ isOpen, onClose, dailyWorkout, healthInfo }: Ai
             description: "Could not load AI trainer guidance. Please try again.",
             variant: "destructive",
           });
-          setIsSpeechError(true); // Indicate error fetching guidance
+          setIsSpeechError(true);
         })
         .finally(() => setIsLoading(false));
     }
 
-    return () => { // Cleanup speech synthesis
+    return () => {
       if (synth && synth.speaking) {
         synth.cancel();
       }
@@ -69,7 +70,7 @@ export function AiTrainerGuide({ isOpen, onClose, dailyWorkout, healthInfo }: Ai
       synth.pause();
       setIsPlaying(false);
     } else {
-      setIsSpeechError(false); // Reset error on new play attempt
+      setIsSpeechError(false);
       if (synth.paused && utteranceRef.current) {
         synth.resume();
         setIsPlaying(true);
@@ -113,21 +114,29 @@ export function AiTrainerGuide({ isOpen, onClose, dailyWorkout, healthInfo }: Ai
           {dailyWorkout && <DialogDescription>{dailyWorkout.workoutName}</DialogDescription>}
         </DialogHeader>
 
-        <div className="flex-grow overflow-hidden">
+        <div className="flex-grow overflow-hidden flex flex-col">
           {isLoading && (
             <div className="flex flex-col items-center justify-center h-full space-y-2">
               <Loader2 className="h-12 w-12 animate-spin text-primary" />
               <p className="text-muted-foreground">Generating your AI guide...</p>
             </div>
           )}
+
           {!isLoading && guidance && (
-            <ScrollArea className="h-[calc(100vh-20rem)] md:h-[calc(100vh-25rem)] pr-4">
+             <ScrollArea className="flex-grow pr-4 mb-2"> {/* Added mb-2 for spacing from soundwave */}
               <h3 className="text-lg font-semibold mb-2 text-primary/90">Closed Captions:</h3>
               <p className="text-sm whitespace-pre-line leading-relaxed text-foreground/80">
                 {guidance.closedCaptions}
               </p>
             </ScrollArea>
           )}
+          
+          {!isLoading && guidance && isPlaying && (
+            <div className="flex justify-center items-center py-2">
+              <SoundwaveIcon isPlaying={true} className="h-8 w-auto text-accent" />
+            </div>
+          )}
+
           {!isLoading && !guidance && isSpeechError && (
              <div className="flex flex-col items-center justify-center h-full text-center">
               <XCircle className="h-12 w-12 text-destructive mb-2" />
