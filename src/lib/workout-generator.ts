@@ -1,3 +1,4 @@
+
 import type { HealthInfo, WorkoutProgram, Exercise, DailyWorkout } from '@/types/fitness';
 
 // Placeholder function to generate a static 7-day workout program
@@ -60,11 +61,24 @@ export function generateWorkoutProgram(healthInfo: HealthInfo): WorkoutProgram {
   });
 }
 
-export function formatWorkoutForAI(dailyWorkout: DailyWorkout, healthInfo: HealthInfo): { workoutDescription: string, userMotivation: string } {
-  const exerciseDescriptions = dailyWorkout.exercises
-    .map(ex => `${ex.name}: ${ex.sets} sets of ${ex.reps} reps`)
-    .join('; ');
-  const workoutDescription = `Today's workout (${dailyWorkout.day} - ${dailyWorkout.workoutName}): ${exerciseDescriptions}.`;
+export function formatWorkoutForAI(
+  dailyWorkout: DailyWorkout, 
+  healthInfo: HealthInfo,
+  selectedExercise?: Exercise | null // Optional parameter for specific exercise
+): { workoutDescription: string, userMotivation: string } {
+  let workoutDescription: string;
+
+  if (selectedExercise) {
+    // Focus on the specific exercise
+    workoutDescription = `The user is focusing on the exercise: ${selectedExercise.name} (${selectedExercise.sets} sets of ${selectedExercise.reps} reps). Provide detailed guidance on form, breathing, and motivation for this specific exercise.`;
+  } else {
+    // Describe the full daily workout
+    const exerciseDescriptions = dailyWorkout.exercises
+      .map(ex => `${ex.name}: ${ex.sets} sets of ${ex.reps} reps`)
+      .join('; ');
+    workoutDescription = `Today's workout (${dailyWorkout.day} - ${dailyWorkout.workoutName}): ${exerciseDescriptions}.`;
+  }
+
   const userMotivation = healthInfo.fitnessGoals || "User wants to get fit and healthy.";
   return { workoutDescription, userMotivation };
 }

@@ -1,7 +1,8 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import type { HealthInfo, WorkoutProgram, DailyWorkout } from '@/types/fitness';
+import type { HealthInfo, WorkoutProgram, DailyWorkout, Exercise } from '@/types/fitness';
 import { HealthInfoForm } from '@/components/app/HealthInfoForm';
 import { WorkoutSchedule } from '@/components/app/WorkoutSchedule';
 import { AiTrainerGuide } from '@/components/app/AiTrainerGuide';
@@ -17,6 +18,8 @@ export default function AIPersonalTrainerPage() {
   
   const [isTrainerGuideOpen, setIsTrainerGuideOpen] = useState(false);
   const [selectedDailyWorkout, setSelectedDailyWorkout] = useState<DailyWorkout | null>(null);
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -52,6 +55,13 @@ export default function AIPersonalTrainerPage() {
 
   const handlePlayWorkout = (dailyWorkout: DailyWorkout) => {
     setSelectedDailyWorkout(dailyWorkout);
+    setSelectedExercise(null); // Ensure no specific exercise is selected for full day guide
+    setIsTrainerGuideOpen(true);
+  };
+
+  const handlePlayExercise = (dailyWorkout: DailyWorkout, exercise: Exercise) => {
+    setSelectedDailyWorkout(dailyWorkout);
+    setSelectedExercise(exercise);
     setIsTrainerGuideOpen(true);
   };
   
@@ -89,6 +99,7 @@ export default function AIPersonalTrainerPage() {
           <WorkoutSchedule 
             workoutProgram={workoutProgram} 
             onPlayWorkout={handlePlayWorkout}
+            onPlayExercise={handlePlayExercise}
             onEditHealthInfo={handleEditHealthInfo}
           />
         )}
@@ -99,6 +110,7 @@ export default function AIPersonalTrainerPage() {
         onClose={() => setIsTrainerGuideOpen(false)}
         dailyWorkout={selectedDailyWorkout}
         healthInfo={healthInfo}
+        selectedExercise={selectedExercise}
       />
 
       <footer className="bg-card text-card-foreground py-6 border-t">

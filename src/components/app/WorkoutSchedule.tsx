@@ -1,17 +1,19 @@
+
 'use client';
 
-import type { WorkoutProgram, DailyWorkout } from '@/types/fitness';
+import type { WorkoutProgram, DailyWorkout, Exercise } from '@/types/fitness';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Play, Zap } from 'lucide-react'; // Zap for workout icon
+import { Play, Zap, Info } from 'lucide-react'; // Zap for workout icon, Info for individual exercise play
 
 interface WorkoutScheduleProps {
   workoutProgram: WorkoutProgram;
   onPlayWorkout: (dailyWorkout: DailyWorkout) => void;
+  onPlayExercise: (dailyWorkout: DailyWorkout, exercise: Exercise) => void;
   onEditHealthInfo: () => void;
 }
 
-export function WorkoutSchedule({ workoutProgram, onPlayWorkout, onEditHealthInfo }: WorkoutScheduleProps) {
+export function WorkoutSchedule({ workoutProgram, onPlayWorkout, onPlayExercise, onEditHealthInfo }: WorkoutScheduleProps) {
   if (!workoutProgram || workoutProgram.length === 0) {
     return (
       <div className="text-center py-10">
@@ -43,10 +45,23 @@ export function WorkoutSchedule({ workoutProgram, onPlayWorkout, onEditHealthInf
             </CardHeader>
             <CardContent className="flex-grow space-y-3">
               <h4 className="font-semibold text-primary/90">Exercises:</h4>
-              <ul className="space-y-1.5 list-disc list-inside pl-1 text-sm">
+              <ul className="space-y-2 text-sm">
                 {dailyWorkout.exercises.map((ex, exIndex) => (
-                  <li key={exIndex}>
-                    <span className="font-medium">{ex.name}:</span> {ex.sets} sets of {ex.reps}
+                  <li key={exIndex} className="flex justify-between items-center">
+                    <div>
+                      <span className="font-medium">{ex.name}:</span> {ex.sets} sets of {ex.reps}
+                    </div>
+                    {dailyWorkout.workoutName !== "Rest Day" && (
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => onPlayExercise(dailyWorkout, ex)}
+                        className="h-7 w-7 text-primary/70 hover:text-primary"
+                        aria-label={`Play guide for ${ex.name}`}
+                      >
+                        <Info className="w-4 h-4" />
+                      </Button>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -58,7 +73,7 @@ export function WorkoutSchedule({ workoutProgram, onPlayWorkout, onEditHealthInf
                   className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
                   aria-label={`Play guide for ${dailyWorkout.day} - ${dailyWorkout.workoutName}`}
                 >
-                  <Play className="mr-2 h-5 w-5" /> Play AI Guide
+                  <Play className="mr-2 h-5 w-5" /> Play Full AI Guide
                 </Button>
               ) : (
                 <p className="text-sm text-muted-foreground w-full text-center italic">Enjoy your rest!</p>

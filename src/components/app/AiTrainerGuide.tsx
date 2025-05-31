@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { DailyWorkout, HealthInfo } from '@/types/fitness';
+import type { DailyWorkout, HealthInfo, Exercise } from '@/types/fitness';
 import type { AiPersonalTrainerVoiceGuideOutput } from '@/ai/flows/ai-personal-trainer-voice-guide';
 import { getAiTrainerGuidance } from '@/actions/ai-trainer';
 import { formatWorkoutForAI } from '@/lib/workout-generator';
@@ -18,9 +18,10 @@ interface AiTrainerGuideProps {
   onClose: () => void;
   dailyWorkout: DailyWorkout | null;
   healthInfo: HealthInfo | null;
+  selectedExercise?: Exercise | null; // Optional: for specific exercise guidance
 }
 
-export function AiTrainerGuide({ isOpen, onClose, dailyWorkout, healthInfo }: AiTrainerGuideProps) {
+export function AiTrainerGuide({ isOpen, onClose, dailyWorkout, healthInfo, selectedExercise }: AiTrainerGuideProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [guidance, setGuidance] = useState<AiPersonalTrainerVoiceGuideOutput | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -37,7 +38,8 @@ export function AiTrainerGuide({ isOpen, onClose, dailyWorkout, healthInfo }: Ai
       setIsPlaying(false);
       setIsSpeechError(false);
       
-      const aiInput = formatWorkoutForAI(dailyWorkout, healthInfo);
+      // Pass selectedExercise to formatWorkoutForAI
+      const aiInput = formatWorkoutForAI(dailyWorkout, healthInfo, selectedExercise);
       getAiTrainerGuidance(aiInput)
         .then((result) => {
           setGuidance(result);
@@ -60,7 +62,8 @@ export function AiTrainerGuide({ isOpen, onClose, dailyWorkout, healthInfo }: Ai
       }
       utteranceRef.current = null;
     };
-  }, [isOpen, dailyWorkout, healthInfo, toast]);
+  // Add selectedExercise to dependency array
+  }, [isOpen, dailyWorkout, healthInfo, selectedExercise, toast]); 
 
   const handlePlayPause = () => {
     const synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
@@ -103,15 +106,26 @@ export function AiTrainerGuide({ isOpen, onClose, dailyWorkout, healthInfo }: Ai
     utteranceRef.current = null;
     onClose();
   };
+  
+  const dialogTitle = selectedExercise 
+    ? `AI Guide - ${selectedExercise.name}`
+    : dailyWorkout 
+    ? `AI Personal Trainer - ${dailyWorkout.day}` 
+    : 'AI Personal Trainer';
+
+  const dialogDescription = selectedExercise
+    ? `${selectedExercise.sets} sets of ${selectedExercise.reps}`
+    : dailyWorkout?.workoutName;
+
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) handleDialogClose(); }}>
       <DialogContent className="sm:max-w-lg md:max-w-xl lg:max-w-2xl max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-2xl font-headline">
-            AI Personal Trainer{dailyWorkout ? ` - ${dailyWorkout.day}` : ''}
+            {dialogTitle}
           </DialogTitle>
-          {dailyWorkout && <DialogDescription>{dailyWorkout.workoutName}</DialogDescription>}
+          {dialogDescription && <DialogDescription>{dialogDescription}</DialogDescription>}
         </DialogHeader>
 
         <div className="flex-grow overflow-hidden flex flex-col">
@@ -123,7 +137,7 @@ export function AiTrainerGuide({ isOpen, onClose, dailyWorkout, healthInfo }: Ai
           )}
 
           {!isLoading && guidance && (
-             <ScrollArea className="flex-grow pr-4 mb-2"> {/* Added mb-2 for spacing from soundwave */}
+             <ScrollArea className="flex-grow pr-4 mb-2">
               <h3 className="text-lg font-semibold mb-2 text-primary/90">Closed Captions:</h3>
               <p className="text-sm whitespace-pre-line leading-relaxed text-foreground/80">
                 {guidance.closedCaptions}
