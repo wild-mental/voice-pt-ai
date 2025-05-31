@@ -20,8 +20,8 @@ export default function AIPersonalTrainerPage() {
 
   // Load state from localStorage on mount
   useEffect(() => {
-    const storedHealthInfo = localStorage.getItem('aiFitnessPalHealthInfo');
-    const storedWorkoutProgram = localStorage.getItem('aiFitnessPalWorkoutProgram');
+    const storedHealthInfo = localStorage.getItem('personalVoicePtHealthInfo');
+    const storedWorkoutProgram = localStorage.getItem('personalVoicePtWorkoutProgram');
     
     if (storedHealthInfo && storedWorkoutProgram) {
       try {
@@ -32,8 +32,8 @@ export default function AIPersonalTrainerPage() {
         setCurrentView('schedule');
       } catch (error) {
         console.error("Error parsing data from localStorage", error);
-        localStorage.removeItem('aiFitnessPalHealthInfo');
-        localStorage.removeItem('aiFitnessPalWorkoutProgram');
+        localStorage.removeItem('personalVoicePtHealthInfo');
+        localStorage.removeItem('personalVoicePtWorkoutProgram');
       }
     }
   }, []);
@@ -46,8 +46,8 @@ export default function AIPersonalTrainerPage() {
     setCurrentView('schedule');
     
     // Save to localStorage
-    localStorage.setItem('aiFitnessPalHealthInfo', JSON.stringify(data));
-    localStorage.setItem('aiFitnessPalWorkoutProgram', JSON.stringify(program));
+    localStorage.setItem('personalVoicePtHealthInfo', JSON.stringify(data));
+    localStorage.setItem('personalVoicePtWorkoutProgram', JSON.stringify(program));
   };
 
   const handlePlayWorkout = (dailyWorkout: DailyWorkout) => {
@@ -64,7 +64,7 @@ export default function AIPersonalTrainerPage() {
       <header className="bg-primary text-primary-foreground py-4 shadow-md">
         <div className="container mx-auto flex items-center justify-center md:justify-start px-4">
           <Dumbbell className="h-8 w-8 mr-3 text-accent" />
-          <h1 className="text-3xl font-headline">AI Fitness Pal</h1>
+          <h1 className="text-3xl font-headline">PersonalVoicePT.ai</h1>
         </div>
       </header>
 
@@ -103,7 +103,7 @@ export default function AIPersonalTrainerPage() {
 
       <footer className="bg-card text-card-foreground py-6 border-t">
         <div className="container mx-auto text-center text-sm">
-          <p>&copy; {new Date().getFullYear()} AI Fitness Pal. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} PersonalVoicePT.ai. All rights reserved.</p>
           <p className="mt-1 text-xs text-muted-foreground">
             Disclaimer: Consult with a healthcare professional before starting any new workout program.
           </p>
