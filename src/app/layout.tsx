@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'PersonalVoicePT.ai',
+  title: 'VoicePT.ai',
   description: 'Your personal AI-powered fitness companion for customized workout plans and voice guidance.',
 };
 

@@ -23,8 +23,8 @@ export default function AIPersonalTrainerPage() {
 
   // Load state from localStorage on mount
   useEffect(() => {
-    const storedHealthInfo = localStorage.getItem('personalVoicePtHealthInfo');
-    const storedWorkoutProgram = localStorage.getItem('personalVoicePtWorkoutProgram');
+    const storedHealthInfo = localStorage.getItem('voicePtHealthInfo');
+    const storedWorkoutProgram = localStorage.getItem('voicePtWorkoutProgram');
     
     if (storedHealthInfo && storedWorkoutProgram) {
       try {
@@ -35,8 +35,8 @@ export default function AIPersonalTrainerPage() {
         setCurrentView('schedule');
       } catch (error) {
         console.error("Error parsing data from localStorage", error);
-        localStorage.removeItem('personalVoicePtHealthInfo');
-        localStorage.removeItem('personalVoicePtWorkoutProgram');
+        localStorage.removeItem('voicePtHealthInfo');
+        localStorage.removeItem('voicePtWorkoutProgram');
       }
     }
   }, []);
@@ -49,8 +49,8 @@ export default function AIPersonalTrainerPage() {
     setCurrentView('schedule');
     
     // Save to localStorage
-    localStorage.setItem('personalVoicePtHealthInfo', JSON.stringify(data));
-    localStorage.setItem('personalVoicePtWorkoutProgram', JSON.stringify(program));
+    localStorage.setItem('voicePtHealthInfo', JSON.stringify(data));
+    localStorage.setItem('voicePtWorkoutProgram', JSON.stringify(program));
   };
 
   const handlePlayWorkout = (dailyWorkout: DailyWorkout) => {
@@ -74,7 +74,7 @@ export default function AIPersonalTrainerPage() {
       <header className="bg-primary text-primary-foreground py-4 shadow-md">
         <div className="container mx-auto flex items-center justify-center md:justify-start px-4">
           <Dumbbell className="h-8 w-8 mr-3 text-accent" />
-          <h1 className="text-3xl font-headline">PersonalVoicePT.ai</h1>
+          <h1 className="text-3xl font-headline">VoicePT.ai</h1>
         </div>
       </header>
 
@@ -92,6 +92,16 @@ export default function AIPersonalTrainerPage() {
               leftThighCircumference: healthInfo.leftThighCircumference,
               rightThighCircumference: healthInfo.rightThighCircumference,
               fitnessGoals: healthInfo.fitnessGoals,
+              shuttleRunCount: healthInfo.shuttleRunCount,
+              tenMeterShuttleRunTime: healthInfo.tenMeterShuttleRunTime,
+              standingLongJumpCm: healthInfo.standingLongJumpCm,
+              sitToStandCount: healthInfo.sitToStandCount,
+              sixMinuteWalkDistanceM: healthInfo.sixMinuteWalkDistanceM,
+              twoMinuteStepCount: healthInfo.twoMinuteStepCount,
+              sitAndReachTargetTime: healthInfo.sitAndReachTargetTime,
+              fiveMeterShuttleRunTime: healthInfo.fiveMeterShuttleRunTime,
+              repeatedSideStepCount: healthInfo.repeatedSideStepCount,
+              eyeHandWallPassTime: healthInfo.eyeHandWallPassTime,
             } : undefined}
           />
         )}
@@ -115,7 +125,7 @@ export default function AIPersonalTrainerPage() {
 
       <footer className="bg-card text-card-foreground py-6 border-t">
         <div className="container mx-auto text-center text-sm">
-          <p>&copy; {new Date().getFullYear()} PersonalVoicePT.ai. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} VoicePT.ai. All rights reserved.</p>
           <p className="mt-1 text-xs text-muted-foreground">
             Disclaimer: Consult with a healthcare professional before starting any new workout program.
           </p>
