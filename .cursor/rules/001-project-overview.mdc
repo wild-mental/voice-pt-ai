@@ -1,0 +1,25 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# PROJECT OVERVIEW: POLLOSSEUM
+
+## Vision
+A cutting-edge political media platform that personalizes content delivery based on users' demographic profiles and ideological preferences.
+
+## Core Features
+- Personalized content curation based on:
+  - Demographics (nationality, age, location, gender)
+  - Ideological alignments (democratic, republican, liberal, feminist, futurist, religious beliefs)
+- Real-time trending political issues
+- User-specific content recommendations
+
+## Project Philosophy
+- Emphasis on high maintainability and scalable architecture
+- Senior engineering practices and standards
+- Comprehensive documentation
+
+## See also:
+- [002-tech-stack.mdc](mdc:.cursor/rules/002-tech-stack.mdc) for implementation details
+- [003-development-guidelines.mdc](mdc:.cursor/rules/003-development-guidelines.mdc) for development standards
