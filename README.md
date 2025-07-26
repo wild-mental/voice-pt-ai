@@ -24,7 +24,7 @@ npm install
 
 ```bash
 # Google AI API 키 (AI 개인 트레이너 기능용)
-GOOGLE_AI_API_KEY=your_google_ai_api_key
+GOOGLE_API_KEY=your_google_ai_api_key
 ```
 
 **참고**: 이 프로젝트는 Google AI (Genkit)만 사용하며, Firebase 설정은 필요하지 않습니다.
@@ -89,7 +89,7 @@ npm run dev -- -p 3000  # 다른 포트 사용
 ```
 
 ### Google AI API 키 오류
-`.env.local` 파일에 `GOOGLE_AI_API_KEY`가 올바르게 설정되었는지 확인하세요. [Google AI Studio](https://aistudio.google.com/app/apikey)에서 API 키를 발급받을 수 있습니다.
+`.env.local` 파일에 `GOOGLE_API_KEY`가 올바르게 설정되었는지 확인하세요. [Google AI Studio](https://aistudio.google.com/app/apikey)에서 API 키를 발급받을 수 있습니다.
 
 ## 📖 더 알아보기
 
